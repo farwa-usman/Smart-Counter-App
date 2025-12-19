@@ -35,7 +35,7 @@ fun CounterScreen(){
     Spacer(modifier = Modifier.height(16.dp))
    Row{
        // Increment Button
-       Button(onClick = {counter++},
+       Button(onClick = {counter++}, enabled = counter<20,
         colors = ButtonDefaults.
         buttonColors(containerColor = Color.Green))
     {Text("Increase", fontSize = 18.sp)}

@@ -52,7 +52,7 @@ fun CounterScreen(){
             Row{
                 // Increment Button
                 Button(onClick = {counter++
-                    if(counter==20) (scope.launch { message.showSnackbar("Maximum Limit reached", actionLabel = "Retry") })}, enabled = counter<20,
+                    if(counter==20) scope.launch { message.showSnackbar("Maximum Limit reached", actionLabel = "Retry") }}, enabled = counter<20,
                     colors = ButtonDefaults.
                     buttonColors(containerColor = Color.Green))
                 {Text("Increase", fontSize = 18.sp)}

@@ -18,6 +18,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,12 +38,12 @@ import kotlinx.coroutines.launch
 @Preview(showSystemUi = true)
 @Composable
 fun CounterScreen(){
-    val message=remember { SnackbarHostState()}
+    val snackbarHostState=remember { SnackbarHostState()}
     var counter by remember { mutableStateOf(0) }
     var scope = rememberCoroutineScope()
     Scaffold (
         topBar = {},
-      snackbarHost={SnackbarHost(hostState = message)},
+      snackbarHost={SnackbarHost(hostState =snackbarHostState )},
        content =  {  PaddingValues->
           Column(modifier = Modifier.padding(PaddingValues).fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -52,13 +53,17 @@ fun CounterScreen(){
             Row{
                 // Increment Button
                 Button(onClick = {counter++
-                    if(counter==20) scope.launch { message.showSnackbar("Maximum Limit reached", actionLabel = "Retry") }}, enabled = counter<20,
+                    if(counter==20) scope.launch {val result= snackbarHostState.showSnackbar("Maximum Limit reached", actionLabel = "Retry")
+                    if (result== SnackbarResult.ActionPerformed) counter=0}
+                                 }, enabled = counter<20,
                     colors = ButtonDefaults.
                     buttonColors(containerColor = Color.Green))
                 {Text("Increase", fontSize = 18.sp)}
                 Spacer(modifier = Modifier.width(16.dp))
                 // Decrement Button
-                Button(onClick = {if (counter>0) counter--},
+                Button(onClick =
+                    {if (counter==0) scope.launch {
+                        snackbarHostState.showSnackbar("Already zero") }  else counter--},
                     colors = ButtonDefaults.
                     buttonColors(containerColor = Color.Red))
                 {Text("Decrease", fontSize = 18.sp)} }}})}

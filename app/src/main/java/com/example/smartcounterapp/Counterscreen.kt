@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -22,9 +24,11 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,8 +43,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun CounterScreen(){
     val snackbarHostState=remember { SnackbarHostState()}
-    var counter by remember { mutableStateOf(0) }
+    var counter by remember{ mutableStateOf(0) }
     var scope = rememberCoroutineScope()
+    var record=remember { mutableStateListOf<String>() }
     Scaffold (
         topBar = {},
       snackbarHost={SnackbarHost(hostState =snackbarHostState )},
@@ -53,8 +58,11 @@ fun CounterScreen(){
             Row{
                 // Increment Button
                 Button(onClick = {counter++
+                    record.add("Increase:$counter")
                     if(counter==20) scope.launch {val result= snackbarHostState.showSnackbar("Maximum Limit reached", actionLabel = "Retry")
-                    if (result== SnackbarResult.ActionPerformed) counter=0}
+                    if (result== SnackbarResult.ActionPerformed)
+                    {counter=0
+                    record.add("Reset:0")}}
                                  }, enabled = counter<20,
                     colors = ButtonDefaults.
                     buttonColors(containerColor = Color.Green))
@@ -63,9 +71,20 @@ fun CounterScreen(){
                 // Decrement Button
                 Button(onClick =
                     {if (counter==0) scope.launch {
-                        snackbarHostState.showSnackbar("Already zero") }  else counter--},
+                        snackbarHostState.showSnackbar("Already zero") }  else counter--
+                  if (counter>0)  record.add("Decrease:$counter")},
                     colors = ButtonDefaults.
                     buttonColors(containerColor = Color.Red))
-                {Text("Decrease", fontSize = 18.sp)} }}})}
+                {Text("Decrease", fontSize = 18.sp)} }
+             if (record.isEmpty()) Text("No actions yet")
+             else
+            { LazyColumn(){
+               item { Text("Record") }
+                items(record){items->
+                    Column { Text(items) }
+                }
+            }}
+          }
+       })}
 
 

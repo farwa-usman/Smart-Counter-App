@@ -3,6 +3,7 @@ package com.example.smartcounterapp
 import android.R.attr.content
 import android.R.attr.padding
 import android.inputmethodservice.Keyboard
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -38,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import kotlin.text.substringAfter
 
 @Preview(showSystemUi = true)
 @Composable
@@ -80,8 +83,9 @@ fun CounterScreen(){
              else
             { LazyColumn(){
                item { Text("Record") }
-                items(record){items->
-                    Column { Text(items) }
+                itemsIndexed(record){index,item->
+                    Column { Text(item, modifier = Modifier.clickable{ val value = item.substringAfter(":").toIntOrNull() ?: 0
+                        counter = value})}
                 }
             }}
           }

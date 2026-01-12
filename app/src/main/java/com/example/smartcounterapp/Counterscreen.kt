@@ -17,8 +17,13 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -35,20 +40,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 //import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import kotlin.text.substringAfter
-
+data class Record(
+    val id:Long,
+   var action:String,
+   var value:Int)
 @Preview(showSystemUi = true)
 @Composable
 fun CounterScreen(){
     val snackbarHostState=remember { SnackbarHostState()}
     var counter by remember{ mutableStateOf(0) }
     var scope = rememberCoroutineScope()
-    var record=remember { mutableStateListOf<String>() }
+    var record=remember { mutableStateListOf<Record>() }
     Scaffold (
         topBar = {},
       snackbarHost={SnackbarHost(hostState =snackbarHostState )},
@@ -61,11 +70,13 @@ fun CounterScreen(){
             Row{
                 // Increment Button
                 Button(onClick = {counter++
-                    record.add("Increase:$counter")
+                    record.add(Record(id= System.currentTimeMillis(),action="Increase", value=counter))
                     if(counter==20) scope.launch {val result= snackbarHostState.showSnackbar("Maximum Limit reached", actionLabel = "Retry")
                     if (result== SnackbarResult.ActionPerformed)
                     {counter=0
-                    record.add("Reset:0")}}
+                        record.add(Record(id= System.currentTimeMillis(),action="Reset", value=counter))
+                    }
+                    }
                                  }, enabled = counter<20,
                     colors = ButtonDefaults.
                     buttonColors(containerColor = Color.Green))
@@ -75,20 +86,22 @@ fun CounterScreen(){
                 Button(onClick =
                     {if (counter==0) scope.launch {
                         snackbarHostState.showSnackbar("Already zero") }  else counter--
-                  if (counter>0)  record.add("Decrease:$counter")},
+                  if (counter>0)  record.add(Record(id= System.currentTimeMillis(),action="Decrease", value=counter))
+                    },
                     colors = ButtonDefaults.
                     buttonColors(containerColor = Color.Red))
                 {Text("Decrease", fontSize = 18.sp)} }
+            // object Creation
              if (record.isEmpty()) Text("No actions yet")
              else
             { LazyColumn(){
                item { Text("Record") }
-                itemsIndexed(record){index,item->
-                    Column { Text(item, modifier = Modifier.clickable{ val value = item.substringAfter(":").toIntOrNull() ?: 0
-                        counter = value})}
-                }
-            }}
-          }
-       })}
+                itemsIndexed(record, key = {index,item->item.id}){index,item->
+                Card {    Row {   Column     {  Text("Action:${item.action}")
+                                                  Text("value:${item.value}",modifier = Modifier.clickable{ val value = item.value ?: 0
+                                                      counter = value})}
+
+                        IconButton(onClick ={record.removeAt(index)}){ Icon(imageVector=Icons.Default.Delete, contentDescription = "delete") }}}
+                } }} } })}
 
 

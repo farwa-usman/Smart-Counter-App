@@ -118,18 +118,22 @@ fun CounterScreen(){
             Spacer(modifier = Modifier.height(40.dp))
             // object Creation
              if (record.isEmpty()) Text("No actions yet", fontWeight = FontWeight.SemiBold, color = Color.DarkGray
-                 //modifier = Modifier.padding().fillMaxHeight().wrapContentSize(Alignment.BottomStart)
+
              )
              else
             { LazyColumn(contentPadding = PaddingValues(vertical = 3.dp)){
                item {
                    Divider(thickness = 3.dp)
-                   Text("Record", modifier = Modifier.padding(10.dp).
-                   fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally), fontWeight = FontWeight.W900)
+                  Row(modifier = Modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
+                      Text("Record", modifier = Modifier.padding(10.dp)
+                          , fontWeight = FontWeight.W900)
+                  }
+//                  Button(onClick = {record.clear()}) {Icon(imageVector = Icons.Default.Delete, contentDescription = "Remove") }
+//                  }
                    Divider(thickness = 3.dp)}
 
                 items(record, key = {it.id}){item->
-                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp), shape = RectangleShape) {Row { Column(modifier = Modifier.fillMaxWidth().padding(7.dp)){  Text("Action:${item.action}")
+                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp), shape = RectangleShape) {Row { Column(modifier = Modifier.padding(7.dp)){  Text("Action:${item.action}")
                     Spacer(modifier = Modifier.height(5.dp))
                                                   Text("value:${item.value}",modifier = Modifier.padding().clickable{ val value = item.value
                                                       counter = value})}
